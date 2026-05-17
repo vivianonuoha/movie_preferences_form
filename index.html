@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cinephile Survey — Movie Preference Form</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,700;0,900;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --paper: #f4ead5;
+    --ink: #1a1208;
+    --accent: #c8102e;
+    --gold: #d4a017;
+    --muted: #6b5d4f;
+    --line: #1a1208;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    min-height: 100vh;
+    font-family: 'Bodoni Moda', serif;
+    color: var(--ink);
+  }
+
+  body {
+    padding: 40px 20px;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(212, 160, 23, 0.08), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(200, 16, 46, 0.08), transparent 40%);
+  }
+
+  .ticket {
+    max-width: 820px;
+    margin: 0 auto;
+    background: var(--paper);
+    position: relative;
+    box-shadow:
+      0 30px 80px rgba(0,0,0,0.6),
+      0 10px 30px rgba(0,0,0,0.4);
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 2px,
+        rgba(26, 18, 8, 0.012) 2px,
+        rgba(26, 18, 8, 0.012) 4px
+      );
+  }
+
+  /* Perforated edges */
+  .ticket::before,
+  .ticket::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background-image: radial-gradient(circle at 10px 10px, var(--bg) 6px, transparent 7px);
+    background-size: 20px 20px;
+    background-repeat: repeat-x;
+  }
+  .ticket::before { top: -10px; }
+  .ticket::after { bottom: -10px; }
+
+  .header {
+    padding: 60px 60px 40px;
+    border-bottom: 3px double var(--line);
+    text-align: center;
+    position: relative;
+  }
+
+  .reel-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    padding: 6px 14px;
+    border: 1px solid var(--accent);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 900;
+    font-size: clamp(48px, 8vw, 88px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  .subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(26, 18, 8, 0.2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  form {
+    padding: 50px 60px 60px;
+  }
+
+  .section {
+    margin-bottom: 44px;
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .section-title {
+    font-family: 'Bodoni Moda', serif;
+    font-size: 26px;
+    font-weight: 700;
+    font-style: italic;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .field {
+    margin-bottom: 22px;
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+  }
+
+  label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  label .req {
+    color: var(--accent);
+    margin-left: 4px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  select,
+  textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    padding: 8px 0;
+    font-family: 'Bodoni Moda', serif;
+    font-size: 18px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.3s, padding 0.3s;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  input[type="email"]:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--accent);
+    border-bottom-width: 2px;
+  }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a1208'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0 center;
+    background-size: 20px;
+    padding-right: 28px;
+    cursor: pointer;
+  }
+
+  textarea {
+    border: 1.5px solid var(--line);
+    padding: 12px;
+    resize: vertical;
+    min-height: 100px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .radio-group, .check-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .pill {
+    position: relative;
+  }
+
+  .pill input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .pill label {
+    display: inline-block;
+    padding: 9px 18px;
+    border: 1.5px solid var(--line);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    margin: 0;
+    transition: all 0.2s ease;
+    background: transparent;
+    text-transform: uppercase;
+  }
+
+  .pill label:hover {
+    background: rgba(26, 18, 8, 0.05);
+  }
+
+  .pill input:checked + label {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  /* Star rating */
+  .stars {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .stars input {
+    display: none;
+  }
+
+  .stars label {
+    cursor: pointer;
+    font-size: 32px;
+    color: rgba(26, 18, 8, 0.2);
+    transition: color 0.2s, transform 0.2s;
+    padding: 0;
+    margin: 0;
+    letter-spacing: 0;
+  }
+
+  .stars label:hover,
+  .stars label:hover ~ label,
+  .stars input:checked ~ label {
+    color: var(--gold);
+  }
+
+  .stars label:hover {
+    transform: scale(1.15);
+  }
+
+  .helper {
+    font-family: 'Bodoni Moda', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* Slider */
+  .slider-wrap {
+    margin-top: 8px;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 2px;
+    background: var(--line);
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-top: -8px;
+    cursor: pointer;
+    border: 2px solid var(--paper);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+
+  input[type="range"]::-moz-range-track {
+    height: 2px;
+    background: var(--line);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--paper);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-top: 6px;
+    text-transform: uppercase;
+  }
+
+  .ornament {
+    text-align: center;
+    margin: 36px 0;
+    font-size: 18px;
+    color: var(--muted);
+    letter-spacing: 1em;
+  }
+
+  .submit-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 3px double var(--line);
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .stamp {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    padding: 8px 14px;
+    transform: rotate(-4deg);
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  button {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 16px 36px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  button:hover {
+    background: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(200, 16, 46, 0.3);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  .footer {
+    padding: 24px 60px;
+    border-top: 1px solid rgba(26, 18, 8, 0.2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  @media (max-width: 640px) {
+    .header, form, .footer { padding-left: 28px; padding-right: 28px; }
+    .field-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 44px; }
+    .meta-row { flex-direction: column; gap: 6px; }
+  }
+
+  /* Success state */
+  .success-msg {
+    display: none;
+    text-align: center;
+    padding: 40px;
+    background: rgba(212, 160, 23, 0.15);
+    border: 2px dashed var(--gold);
+    margin-top: 30px;
+    font-style: italic;
+    font-size: 20px;
+  }
+  .success-msg.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="ticket">
+
+  <div class="header">
+    <span class="reel-badge">◉ Reel No. 042 ◉</span>
+    <h1>The Cinephile <em>Survey</em></h1>
+    <p class="subtitle">A Confidential Inquiry Into Your Moviegoing Soul</p>
+    <div class="meta-row">
+      <span>Admit One</span>
+      <span>Row · J · Seat · 14</span>
+      <span>No Refunds</span>
+    </div>
+  </div>
+
+  <form id="movieForm">
+
+    <!-- SECTION 1: ABOUT THE RESPONDENT -->
+    <div class="section">
+      <div class="section-num">Part I</div>
+      <h2 class="section-title">The Audience Member</h2>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="name">Full Name <span class="req">*</span></label>
+          <input type="text" id="name" name="name" required placeholder="As it would appear in the credits">
+        </div>
+        <div class="field">
+          <label for="age">Age <span class="req">*</span></label>
+          <input type="number" id="age" name="age" min="1" max="120" required placeholder="Years">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email <span style="color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0;">(optional)</span></label>
+        <input type="email" id="email" name="email" placeholder="for festival invitations only">
+      </div>
+
+      <div class="field">
+        <label>Gender</label>
+        <div class="radio-group">
+          <div class="pill">
+            <input type="radio" id="g1" name="gender" value="female">
+            <label for="g1">Female</label>
+          </div>
+          <div class="pill">
+            <input type="radio" id="g2" name="gender" value="male">
+            <label for="g2">Male</label>
+          </div>
+          <div class="pill">
+            <input type="radio" id="g3" name="gender" value="non-binary">
+            <label for="g3">Non-binary</label>
+          </div>
+          <div class="pill">
+            <input type="radio" id="g4" name="gender" value="other">
+            <label for="g4">Other</label>
+          </div>
+          <div class="pill">
+            <input type="radio" id="g5" name="gender" value="prefer-not">
+            <label for="g5">Prefer not to say</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field" id="genderOtherField" style="display: none;">
+        <label for="genderOther">Please specify</label>
+        <input type="text" id="genderOther" name="genderOther" placeholder="Self-describe">
+      </div>
+
+      <div class="field">
+        <label>How often do you watch films?</label>
+        <div class="radio-group">
+          <div class="pill">
+            <input type="radio" id="freq1" name="frequency" value="daily">
+            <label for="freq1">Daily Devotee</label>
+          </div>
+          <div class="pill">
+            <input type="radio" id="freq2" name="frequency" value="weekly">
+            <label for="freq2">Weekly</label>
+          </div>
+          <div class="pill">
+            <input type="radio" id="freq3" name="frequency" value="monthly">
+            <label for="freq3">Monthly</label>
+          </div>
+          <div class="pill">
+            <input type="radio" id="freq4" name="frequency" value="rarely">
+            <label for="freq4">Rarely</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ornament">· · · · ·</div>
+
+    <!-- SECTION 2: GENRE -->
+    <div class="section">
+      <div class="section-num">Part II</div>
+      <h2 class="section-title">The Genre of Choice</h2>
+
+      <div class="field">
+        <label for="genre">Favorite Movie Category / Genre <span class="req">*</span></label>
+        <select id="genre" name="genre" required>
+          <option value="">— Select your preferred reel —</option>
+          <option>Action / Adventure</option>
+          <option>Animation</option>
+          <option>Comedy</option>
+          <option>Crime / Noir</option>
+          <option>Documentary</option>
+          <option>Drama</option>
+          <option>Fantasy</option>
+          <option>Horror</option>
+          <option>Musical</option>
+          <option>Mystery / Thriller</option>
+          <option>Romance</option>
+          <option>Science Fiction</option>
+          <option>Western</option>
+          <option>Art House / Experimental</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>How would you rate this genre overall?</label>
+        <p class="helper">Five stars for masterpiece, one for forgettable.</p>
+        <div class="stars">
+          <input type="radio" id="r5" name="genreRating" value="5"><label for="r5">★</label>
+          <input type="radio" id="r4" name="genreRating" value="4"><label for="r4">★</label>
+          <input type="radio" id="r3" name="genreRating" value="3"><label for="r3">★</label>
+          <input type="radio" id="r2" name="genreRating" value="2"><label for="r2">★</label>
+          <input type="radio" id="r1" name="genreRating" value="1"><label for="r1">★</label>
+        </div>
+      </div>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="favMovie">Favorite Film in This Genre <span class="req">*</span></label>
+          <input type="text" id="favMovie" name="favMovie" required placeholder="Title & year, if you please">
+        </div>
+        <div class="field">
+          <label for="favActor">Favorite Actor in This Genre</label>
+          <input type="text" id="favActor" name="favActor" placeholder="The face on the poster">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="favDirector">Favorite Director (any genre)</label>
+        <input type="text" id="favDirector" name="favDirector" placeholder="The auteur behind the camera">
+      </div>
+    </div>
+
+    <div class="ornament">· · · · ·</div>
+
+    <!-- SECTION 3: MUSIC & MOOD -->
+    <div class="section">
+      <div class="section-num">Part III</div>
+      <h2 class="section-title">The Music &amp; The Mood</h2>
+
+      <div class="field">
+        <label for="score">Favorite Musical Score / Soundtrack</label>
+        <input type="text" id="score" name="score" placeholder='e.g., "The Godfather" by Nino Rota'>
+        <p class="helper">Composer, film, or simply the theme that haunts you.</p>
+      </div>
+
+      <div class="field">
+        <label>How important is the score to your enjoyment?</label>
+        <div class="slider-wrap">
+          <input type="range" id="scoreImportance" name="scoreImportance" min="1" max="10" value="7">
+          <div class="slider-labels">
+            <span>Barely Notice</span>
+            <span>Defines the Film</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Preferred Mood (select all that apply)</label>
+        <div class="check-group">
+          <div class="pill"><input type="checkbox" id="m1" name="mood" value="uplifting"><label for="m1">Uplifting</label></div>
+          <div class="pill"><input type="checkbox" id="m2" name="mood" value="melancholic"><label for="m2">Melancholic</label></div>
+          <div class="pill"><input type="checkbox" id="m3" name="mood" value="tense"><label for="m3">Tense</label></div>
+          <div class="pill"><input type="checkbox" id="m4" name="mood" value="dreamy"><label for="m4">Dreamy</label></div>
+          <div class="pill"><input type="checkbox" id="m5" name="mood" value="comedic"><label for="m5">Comedic</label></div>
+          <div class="pill"><input type="checkbox" id="m6" name="mood" value="epic"><label for="m6">Epic</label></div>
+          <div class="pill"><input type="checkbox" id="m7" name="mood" value="unsettling"><label for="m7">Unsettling</label></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ornament">· · · · ·</div>
+
+    <!-- SECTION 4: HABITS -->
+    <div class="section">
+      <div class="section-num">Part IV</div>
+      <h2 class="section-title">The Critic's Corner</h2>
+
+      <div class="field">
+        <label>Which rating / review platforms do you consult?</label>
+        <p class="helper">Tick all that apply — we won't tell the others.</p>
+        <div class="check-group">
+          <div class="pill"><input type="checkbox" id="p1" name="platform" value="IMDb"><label for="p1">IMDb</label></div>
+          <div class="pill"><input type="checkbox" id="p2" name="platform" value="Rotten Tomatoes"><label for="p2">Rotten Tomatoes</label></div>
+          <div class="pill"><input type="checkbox" id="p3" name="platform" value="Metacritic"><label for="p3">Metacritic</label></div>
+          <div class="pill"><input type="checkbox" id="p4" name="platform" value="Letterboxd"><label for="p4">Letterboxd</label></div>
+          <div class="pill"><input type="checkbox" id="p5" name="platform" value="Roger Ebert"><label for="p5">RogerEbert.com</label></div>
+          <div class="pill"><input type="checkbox" id="p6" name="platform" value="None"><label for="p6">None — I trust my gut</label></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="otherPlatform">Other Platform (please specify)</label>
+        <input type="text" id="otherPlatform" name="otherPlatform" placeholder="A friend's blog? A trusted publication?">
+      </div>
+
+      <div class="field-grid">
+        <div class="field">
+          <label>Preferred viewing setting</label>
+          <div class="radio-group">
+            <div class="pill"><input type="radio" id="v1" name="venue" value="theater"><label for="v1">Cinema</label></div>
+            <div class="pill"><input type="radio" id="v2" name="venue" value="home"><label for="v2">At Home</label></div>
+            <div class="pill"><input type="radio" id="v3" name="venue" value="both"><label for="v3">Both Equally</label></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Subtitles or dubbed?</label>
+          <div class="radio-group">
+            <div class="pill"><input type="radio" id="s1" name="subs" value="subtitles"><label for="s1">Subtitles</label></div>
+            <div class="pill"><input type="radio" id="s2" name="subs" value="dubbed"><label for="s2">Dubbed</label></div>
+            <div class="pill"><input type="radio" id="s3" name="subs" value="original"><label for="s3">Original Only</label></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="era">Preferred Era of Cinema</label>
+        <select id="era" name="era">
+          <option value="">— No preference —</option>
+          <option>Silent Era (pre-1930)</option>
+          <option>Golden Age (1930s–1950s)</option>
+          <option>New Hollywood (1960s–1970s)</option>
+          <option>Blockbuster Era (1980s–1990s)</option>
+          <option>Modern (2000s–2010s)</option>
+          <option>Contemporary (2020s–today)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="thoughts">Any other thoughts on film?</label>
+        <textarea id="thoughts" name="thoughts" placeholder="A scene that haunts you. A trope you despise. The film you watch every birthday. Whatever you wish to confess."></textarea>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <span class="stamp">✦ Approved for All Audiences ✦</span>
+      <button type="submit">Roll the Credits ▸</button>
+    </div>
+
+    <div class="success-msg" id="success">
+      🎬 Thank you. Your preferences have been catalogued in the projection booth.
+    </div>
+
+  </form>
+
+  <div class="footer">
+    <span>Form 042-B · Confidential</span>
+    <span>Now Showing · Daily</span>
+  </div>
+
+</div>
+
+<script>
+  const form = document.getElementById('movieForm');
+  const success = document.getElementById('success');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    console.log('Survey submitted:', data);
+    success.classList.add('show');
+    success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  // Show "specify" field when Gender = Other is selected
+  const genderOtherField = document.getElementById('genderOtherField');
+  document.querySelectorAll('input[name="gender"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      genderOtherField.style.display = (radio.value === 'other' && radio.checked) ? 'block' : 'none';
+    });
+  });
+</script>
+
+</body>
+</html>
