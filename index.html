@@ -720,12 +720,60 @@
   const form = document.getElementById('movieForm');
   const success = document.getElementById('success');
 
-  form.addEventListener('submit', function(e) {
+  // 🔧 PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
+  const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxgmSI1oVu2LLDmwHKsNFgVhvIveRdnuhj8v04cVvLSzFeyaSZtFN3h-tSi9I8Q-HIEpw/exec';
+
+  form.addEventListener('submit', async function(e) {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(form).entries());
-    console.log('Survey submitted:', data);
-    success.classList.add('show');
-    success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const fd = new FormData(form);
+
+    // Build payload — checkbox groups need getAll(), single fields use get()
+    const payload = {
+      name: fd.get('name'),
+      age: fd.get('age'),
+      email: fd.get('email'),
+      gender: fd.get('gender'),
+      genderOther: fd.get('genderOther'),
+      frequency: fd.get('frequency'),
+      genre: fd.get('genre'),
+      genreRating: fd.get('genreRating'),
+      favMovie: fd.get('favMovie'),
+      favActor: fd.get('favActor'),
+      favDirector: fd.get('favDirector'),
+      score: fd.get('score'),
+      scoreImportance: fd.get('scoreImportance'),
+      mood: fd.getAll('mood'),
+      platform: fd.getAll('platform'),
+      otherPlatform: fd.get('otherPlatform'),
+      venue: fd.get('venue'),
+      subs: fd.get('subs'),
+      era: fd.get('era'),
+      thoughts: fd.get('thoughts')
+    };
+
+    const btn = form.querySelector('button[type="submit"]');
+    const originalText = btn.textContent;
+    btn.textContent = 'Saving…';
+    btn.disabled = true;
+
+    try {
+      // 'no-cors' avoids preflight issues with Apps Script; response is opaque but the row is saved
+      await fetch(SHEET_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      success.classList.add('show');
+      success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      form.reset();
+    } catch (err) {
+      console.error('Submission error:', err);
+      alert('Something went wrong saving your response. Please try again.');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
   });
 
   // Show "specify" field when Gender = Other is selected
